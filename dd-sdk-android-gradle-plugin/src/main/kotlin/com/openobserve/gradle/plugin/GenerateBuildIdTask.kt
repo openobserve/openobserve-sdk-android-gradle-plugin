@@ -1,0 +1,108 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin
+
+import com.openobserve.gradle.plugin.internal.utils.capitalizeChar
+import com.openobserve.gradle.plugin.internal.variant.AppVariant
+import org.gradle.api.DefaultTask
+import org.gradle.api.Project
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskProvider
+import java.util.UUID
+import kotlin.io.path.Path
+
+/**
+ * This task generates unique Build ID which is later used to match error and mapping file.
+ */
+abstract class GenerateBuildIdTask : DefaultTask() {
+
+    /**
+     * Directory to store build ID file.
+     */
+    @get:OutputDirectory
+    abstract val buildIdDirectory: DirectoryProperty
+
+    /**
+     * File containing build ID.
+     */
+    @get:Internal
+    val buildIdFile: Provider<RegularFile> = buildIdDirectory.file(BUILD_ID_FILE_NAME)
+
+    /**
+     * Variant name this task is linked to.
+     */
+    @get:Input
+    abstract val variantName: Property<String>
+
+    init {
+        outputs.upToDateWhen { false }
+        // not a part of any group, we don't want to expose it
+        description = "Generates a unique build ID to associate mapping file and application."
+    }
+
+    /**
+     * Generates unique build ID and saves it to a file.
+     */
+    @TaskAction
+    fun generateBuildId() {
+        val buildIdDirectory = buildIdDirectory.get().asFile
+        buildIdDirectory.mkdirs()
+
+        val buildId = UUID.randomUUID().toString()
+        logger.info("Generated buildId=$buildId for variant=${variantName.get()}")
+        buildIdFile.get().asFile
+            .writeText(buildId)
+    }
+
+    internal companion object {
+        private const val TASK_NAME = "generateBuildId"
+
+        /**
+         * Name of the file containing build ID information.
+         */
+        const val BUILD_ID_FILE_NAME = "datadog.buildId"
+
+        /**
+         * Registers a new instance of [GenerateBuildIdTask] specific for the given [AppVariant].
+         */
+        fun register(
+            target: Project,
+            variant: AppVariant
+        ): TaskProvider<GenerateBuildIdTask> {
+            val buildIdDirectory = buildIdDirectory(target, variant.name)
+            val generateBuildIdTask = target.tasks.register(
+                TASK_NAME + variant.name.replaceFirstChar { capitalizeChar(it) },
+                GenerateBuildIdTask::class.java
+            ) {
+                it.buildIdDirectory.set(buildIdDirectory)
+                it.variantName.set(variant.name)
+            }
+            variant.bindWith(generateBuildIdTask, buildIdDirectory)
+
+            return generateBuildIdTask
+        }
+
+        private fun buildIdFilePath(variantName: String) =
+            Path("generated", "datadog", "buildId", variantName, BUILD_ID_FILE_NAME)
+
+        private fun buildIdDirectory(target: Project, variantName: String): Provider<Directory> {
+            return target.layout.buildDirectory.dir(buildIdFilePath(variantName).parent.toString())
+        }
+
+        fun buildIdFile(target: Project, variantName: String): Provider<RegularFile> {
+            return target.layout.buildDirectory.file(buildIdFilePath(variantName).toString())
+        }
+    }
+}

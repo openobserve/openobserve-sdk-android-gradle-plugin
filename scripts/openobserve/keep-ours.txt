@@ -1,0 +1,7 @@
+# Fork-owned identity files — never rebranded by the codemod (authored/overlaid for the fork).
+LICENSE
+NOTICE
+README.md
+CHANGELOG.md
+.github
+scripts/openobserve

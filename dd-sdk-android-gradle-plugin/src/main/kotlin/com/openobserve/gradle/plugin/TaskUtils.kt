@@ -1,0 +1,92 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin
+
+import com.android.builder.model.Version
+import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
+import java.io.File
+import kotlin.io.path.Path
+
+internal object TaskUtils {
+
+    private const val MAX_OPENOBSERVE_CI_FILE_LOOKUP_LEVELS = 4
+
+    @Suppress("StringLiteralDuplication")
+    fun resolveOpenObserveRepositoryFile(target: Project): Provider<RegularFile> {
+        return target.layout.buildDirectory.dir(
+            Path("outputs", "reports", "datadog").toString()
+        ).map { it.file("repository.json") }
+    }
+
+    fun findOpenObserveCiFile(projectDir: File): File? {
+        var currentDir: File? = projectDir
+        var levelsUp = 0
+        while (currentDir != null && levelsUp < MAX_OPENOBSERVE_CI_FILE_LOOKUP_LEVELS) {
+            val ooCiFile = File(currentDir, "datadog-ci.json")
+            if (ooCiFile.exists()) {
+                return ooCiFile
+            }
+            currentDir = currentDir.parentFile
+            levelsUp++
+        }
+        return null
+    }
+
+    fun isAgpEqualOrAbove(major: Int, minor: Int, patch: Int): Boolean {
+        return isVersionEqualOrAbove(Version.ANDROID_GRADLE_PLUGIN_VERSION, major, minor, patch)
+    }
+
+    // Gradle version may not have patch version
+    fun isGradleEqualOrAbove(project: Project, major: Int, minor: Int, patch: Int = 0): Boolean {
+        return isVersionEqualOrAbove(project.gradle.gradleVersion, major, minor, patch)
+    }
+
+    @Suppress("MagicNumber")
+    fun isVersionEqualOrAbove(refVersion: String, major: Int, minor: Int, patch: Int): Boolean {
+        val groups = refVersion.split(".")
+        // should be at least major and minor versions
+        if (groups.size < 2) return false
+        val currentMajor = groups[0].toIntOrNull() ?: 0
+        val currentMinor = groups[1].toIntOrNull() ?: 0
+        val currentPatch = groups.getOrNull(2)?.substringBefore("-")?.toIntOrNull() ?: 0
+        return SemVer(currentMajor, currentMinor, currentPatch) >= SemVer(major, minor, patch)
+    }
+
+    private class SemVer(val major: Int, val minor: Int, val patch: Int)
+
+    private operator fun SemVer.compareTo(other: SemVer): Int {
+        return if (this.major != other.major) {
+            this.major - other.major
+        } else if (this.minor != other.minor) {
+            this.minor - other.minor
+        } else {
+            this.patch - other.patch
+        }
+    }
+}
+
+@Deprecated(
+    message = "Renamed to MappingFileUploadTask",
+    replaceWith = ReplaceWith(
+        expression = "MappingFileUploadTask",
+        imports = arrayOf("com.openobserve.gradle.plugin.MappingFileUploadTask")
+    )
+)
+@Suppress("unused")
+typealias DdMappingFileUploadTask = MappingFileUploadTask
+
+@Deprecated(
+    message = "Renamed to CheckSdkDepsTask",
+    replaceWith = ReplaceWith(
+        expression = "CheckSdkDepsTask",
+        imports = arrayOf("com.openobserve.gradle.plugin.CheckSdkDepsTask")
+    )
+)
+@Suppress("unused")
+typealias DdCheckSdkDepsTask = CheckSdkDepsTask

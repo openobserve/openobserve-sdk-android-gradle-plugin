@@ -1,0 +1,49 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin
+
+/**
+ * Defines the mode of instrumentation for the plugin.
+ *
+ * This enum controls how the plugin applies instrumentation to the code, based on the selected mode.
+ */
+enum class InstrumentationMode {
+
+    /**
+     * **AUTO** mode enables automatic instrumentation.
+     *
+     * In this mode, the plugin automatically instruments all required code
+     * for the feature without requiring explicit annotations.
+     */
+    AUTO,
+
+    /**
+     * **ANNOTATION** mode enables selective instrumentation.
+     *
+     * In this mode, only functions explicitly annotated with the required annotation
+     * will be instrumented by the plugin.
+     */
+    ANNOTATION,
+
+    /**
+     * **DISABLE** mode turns off instrumentation.
+     *
+     * When this mode is set, the plugin does not apply any instrumentation
+     * for this feature, effectively disabling it.
+     */
+    DISABLE;
+
+    /** Factory methods for [InstrumentationMode]. */
+    companion object {
+        /**
+         * Returns the [InstrumentationMode] whose name matches [value], or null if none matches.
+         */
+        fun from(value: String): InstrumentationMode? {
+            return entries.firstOrNull { it.name == value }
+        }
+    }
+}

@@ -28,7 +28,7 @@ a.R$bool$$ExternalSyntheticOutline0 -> a.a:
       # {"id":"com.android.tools.r8.synthesized"}
     java.lang.String androidx.work.OutOfQuotaPolicy$EnumUnboxingLocalUtility.stringValueOf(int) -> j
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String com.datadog.android.rum.internal.domain.scope.RumViewScope$RumViewType$EnumUnboxingLocalUtility.stringValueOf(int) -> k
+    java.lang.String com.openobserve.android.rum.internal.domain.scope.RumViewScope$RumViewType$EnumUnboxingLocalUtility.stringValueOf(int) -> k
       # {"id":"com.android.tools.r8.synthesized"}
 androidx.activity.ComponentActivity -> androidx.activity.ComponentActivity:
     androidx.activity.OnBackPressedDispatcher mOnBackPressedDispatcher -> g

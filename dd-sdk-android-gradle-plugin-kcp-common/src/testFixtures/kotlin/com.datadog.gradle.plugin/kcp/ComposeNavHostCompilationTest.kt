@@ -1,12 +1,12 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
-package com.datadog.gradle.plugin.kcp
+package com.openobserve.gradle.plugin.kcp
 
-import com.datadog.gradle.plugin.InstrumentationMode
+import com.openobserve.gradle.plugin.InstrumentationMode
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import fr.xgouchet.elmyr.annotation.Forgery
@@ -42,7 +42,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NavHostTestCase",
+            "com.openobserve.kcp.NavHostTestCase",
             "NavHostTestCase",
             emptyList()
         )
@@ -74,7 +74,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NavHostTestCase",
+            "com.openobserve.kcp.NavHostTestCase",
             "NavHostTestCase",
             emptyList()
         )
@@ -106,7 +106,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NavHostTestCase",
+            "com.openobserve.kcp.NavHostTestCase",
             "NavHostTestCase",
             emptyList()
         )
@@ -138,7 +138,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NavHostTestCase",
+            "com.openobserve.kcp.NavHostTestCase",
             "NavHostTestCase",
             emptyList()
         )
@@ -170,7 +170,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NavHostNestedTestCase",
+            "com.openobserve.kcp.NavHostNestedTestCase",
             "NavHostNestedTestCase",
             emptyList()
         )
@@ -191,7 +191,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val NAV_HOST_TEST_CASE_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.navigation.compose.NavHost
@@ -212,7 +212,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val NAV_HOST_TEST_CASE_WITH_APPLY_EXPRESSION_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.navigation.compose.NavHost
@@ -237,7 +237,7 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val NAV_HOST_TEST_CASE_WITH_CALL_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.navigation.compose.NavHost
@@ -257,13 +257,13 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val NAV_HOST_TEST_CASE_WITH_ANNOTATION_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.navigation.compose.NavHost
             import androidx.navigation.compose.composable
             import androidx.navigation.compose.rememberNavController
-            import com.datadog.android.compose.ComposeInstrumentation
+            import com.openobserve.android.compose.ComposeInstrumentation
             
             class NavHostTestCase{
                 @ComposeInstrumentation
@@ -280,13 +280,13 @@ abstract class ComposeNavHostCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val NAV_HOST_NESTED_TEST_CASE_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.navigation.compose.NavHost
             import androidx.navigation.compose.composable
             import androidx.navigation.compose.rememberNavController
-            import com.datadog.android.compose.ComposeInstrumentation
+            import com.openobserve.android.compose.ComposeInstrumentation
             
             class NavHostNestedTestCase{
                 @ComposeInstrumentation

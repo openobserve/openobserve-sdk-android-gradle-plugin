@@ -1,4 +1,4 @@
-import com.datadog.gradle.config.AndroidConfig
+import com.openobserve.gradle.config.AndroidConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -15,7 +15,7 @@ android {
         minSdk = AndroidConfig.MIN_SDK
     }
 
-    namespace = "com.datadog.example.lib"
+    namespace = "com.openobserve.example.lib"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

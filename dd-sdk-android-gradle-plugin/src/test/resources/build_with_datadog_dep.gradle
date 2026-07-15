@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("com.datadoghq.dd-sdk-android-gradle-plugin")
+    id("io.openobserve.openobserve-sdk-android-gradle-plugin")
 }
 
 repositories {
@@ -73,5 +73,5 @@ if (Integer.parseInt(rootProject.ext.agpVersion.split("\\.")[0]) >= 9) {
 }
 
 dependencies {
-    implementation(rootProject.ext.datadogSdkDependency)
+    implementation(rootProject.ext.ooSdkDependency)
 }

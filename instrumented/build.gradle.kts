@@ -1,10 +1,10 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
-import com.datadog.gradle.config.AndroidConfig
+import com.openobserve.gradle.config.AndroidConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -17,11 +17,11 @@ plugins {
 }
 
 android {
-    namespace = "com.datadog.android.instrumented"
+    namespace = "com.openobserve.android.instrumented"
     compileSdk = AndroidConfig.TARGET_SDK
 
     defaultConfig {
-        applicationId = "com.datadog.android.instrumented"
+        applicationId = "com.openobserve.android.instrumented"
         // Min SDK must be higher than 30 to make Android instrumented test support
         // space characters in function names
         minSdk = AndroidConfig.TARGET_SDK
@@ -63,7 +63,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             listOf(
                 "-P",
-                "plugin:com.datadoghq.kotlin.compiler:INSTRUMENTATION_MODE=AUTO"
+                "plugin:io.openobserve.kotlin.compiler:INSTRUMENTATION_MODE=AUTO"
             )
         )
     }
@@ -71,8 +71,8 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
 
-    kotlinCompilerPluginClasspath(project(":dd-sdk-android-gradle-plugin-kcp-common"))
-    kotlinCompilerPluginClasspath(project(":dd-sdk-android-gradle-plugin-kcp-kotlin22"))
+    kotlinCompilerPluginClasspath(project(":openobserve-sdk-android-gradle-plugin-kcp-common"))
+    kotlinCompilerPluginClasspath(project(":openobserve-sdk-android-gradle-plugin-kcp-kotlin22"))
     // We use kotlin22 because the kotlin compiler for this project is kotlin 2.3.x
     // Kotlin Compiler 2.3.x can not read kotlin21 through classpath.
     implementation(project(":samples:lib-module"))
@@ -80,8 +80,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.datadogSdkComposeSnapshot)
-    implementation(libs.datadogSdkRumSnapshot)
+    implementation(libs.ooSdkComposeSnapshot)
+    implementation(libs.ooSdkRumSnapshot)
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.compose.navigation)
-    androidTestImplementation(libs.datadogSdkRumSnapshot)
+    androidTestImplementation(libs.ooSdkRumSnapshot)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

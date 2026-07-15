@@ -1,10 +1,10 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
-import com.datadog.gradle.config.MavenConfig
+import com.openobserve.gradle.config.MavenConfig
 
 plugins {
     // Build
@@ -28,13 +28,13 @@ plugins {
     id("thirdPartyLicences")
     id("transitiveDependencies")
     id("compilerMetadata")
-    id("datadogBuildConfig")
+    id("ooBuildConfig")
     alias(libs.plugins.buildConfig)
 }
 
 buildConfig {
-    packageName("com.datadog.gradle.plugin.kcp")
-    buildConfigField("DD_PLUGIN_VERSION", MavenConfig.VERSION.name)
+    packageName("com.openobserve.gradle.plugin.kcp")
+    buildConfigField("OO_PLUGIN_VERSION", MavenConfig.VERSION.name)
 }
 
 dependencies {
@@ -54,26 +54,26 @@ dependencies {
     testImplementation(libs.kotlinGradlePlugin21)
 }
 
-datadogBuildConfig {
+ooBuildConfig {
     applyKotlinConfig()
     applyJunitConfig()
     applyJacocoConfig()
     applyJavadocConfig()
     applyDependencyUpdateConfig()
-    applyPublishingConfig("Plugin to upload Proguard/R8 mapping files to Datadog.")
+    applyPublishingConfig("Plugin to upload Proguard/R8 mapping files to OpenObserve.")
 }
 
 gradlePlugin {
 
     website.set("https://docs.datadoghq.com/real_user_monitoring/error_tracking/android/")
-    vcsUrl.set("https://github.com/DataDog/dd-sdk-android-gradle-plugin")
+    vcsUrl.set("https://github.com/openobserve/openobserve-sdk-android-gradle-plugin")
 
     plugins {
-        register("dd-sdk-android-gradle-plugin") {
-            description = "This plugin is used to upload your Proguard/R8 mapping files to Datadog."
-            id = "com.datadoghq.dd-sdk-android-gradle-plugin" // the alias
-            implementationClass = "com.datadog.gradle.plugin.DdAndroidGradlePlugin"
-            displayName = "Gradle Plugin for Datadog Android SDK"
+        register("openobserve-sdk-android-gradle-plugin") {
+            description = "This plugin is used to upload your Proguard/R8 mapping files to OpenObserve."
+            id = "io.openobserve.openobserve-sdk-android-gradle-plugin" // the alias
+            implementationClass = "com.openobserve.gradle.plugin.DdAndroidGradlePlugin"
+            displayName = "Gradle Plugin for OpenObserve Android SDK"
             version = MavenConfig.VERSION.name
             tags.set(listOf("android", "datadog", "mapping", "crash-report", "proguard", "R8"))
         }

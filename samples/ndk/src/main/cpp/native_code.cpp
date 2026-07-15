@@ -19,7 +19,7 @@
 #include <jni.h>
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_datadog_example_ndk_MainActivity_stringFromJNI( JNIEnv* env,
+Java_com_openobserve_example_ndk_MainActivity_stringFromJNI( JNIEnv* env,
                                                   jobject object ) {
     return env->NewStringUTF("Hello from JNI!");
 }

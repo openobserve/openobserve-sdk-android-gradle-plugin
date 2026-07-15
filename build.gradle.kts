@@ -1,7 +1,7 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
 buildscript {
@@ -18,7 +18,7 @@ buildscript {
 
     dependencies {
         // Uncomment to use the samples
-        // classpath(libs.datadogPluginGradle)
+        // classpath(libs.ooPluginGradle)
     }
 }
 

@@ -1,7 +1,7 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
 plugins {
@@ -54,23 +54,23 @@ gradlePlugin {
     plugins {
         register("thirdPartyLicences") {
             id = "thirdPartyLicences" // the alias
-            implementationClass = "com.datadog.gradle.plugin.checklicenses.ThirdPartyLicensesPlugin"
+            implementationClass = "com.openobserve.gradle.plugin.checklicenses.ThirdPartyLicensesPlugin"
         }
         register("transitiveDependencies") {
             id = "transitiveDependencies" // the alias
-            implementationClass = "com.datadog.gradle.plugin.transdeps.TransitiveDependenciesPlugin"
+            implementationClass = "com.openobserve.gradle.plugin.transdeps.TransitiveDependenciesPlugin"
         }
         register("compilerMetadata") {
             id = "compilerMetadata" // the alias
-            implementationClass = "com.datadog.gradle.plugin.compilermeta.CompilerMetaPlugin"
+            implementationClass = "com.openobserve.gradle.plugin.compilermeta.CompilerMetaPlugin"
         }
-        register("datadogBuildConfig") {
-            id = "datadogBuildConfig" // the alias
-            implementationClass = "com.datadog.gradle.plugin.config.BuildConfigPlugin"
+        register("ooBuildConfig") {
+            id = "ooBuildConfig" // the alias
+            implementationClass = "com.openobserve.gradle.plugin.config.BuildConfigPlugin"
         }
         register("noopBuildConfigClasspath") {
             id = "noopBuildConfigClasspath" // the alias
-            implementationClass = "com.datadog.gradle.plugin.noop.BuildConfigClasspathPlugin"
+            implementationClass = "com.openobserve.gradle.plugin.noop.BuildConfigClasspathPlugin"
         }
     }
 }

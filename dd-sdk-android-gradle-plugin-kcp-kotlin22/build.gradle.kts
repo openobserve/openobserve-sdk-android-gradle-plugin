@@ -1,7 +1,7 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
 plugins {
@@ -25,18 +25,18 @@ plugins {
     id("thirdPartyLicences")
     id("transitiveDependencies")
     id("compilerMetadata")
-    id("datadogBuildConfig")
+    id("ooBuildConfig")
 }
 
 dependencies {
-    implementation(project(":dd-sdk-android-gradle-plugin-kcp-common"))
+    implementation(project(":openobserve-sdk-android-gradle-plugin-kcp-common"))
     compileOnly(libs.kotlinCompilerEmbeddable22)
     compileOnly(libs.kotlinGradlePlugin22)
     compileOnly(libs.autoServiceAnnotation)
     compileOnly(libs.kotlinReflect)
     kapt(libs.autoService)
 
-    testImplementation(testFixtures(project(":dd-sdk-android-gradle-plugin-kcp-common")))
+    testImplementation(testFixtures(project(":openobserve-sdk-android-gradle-plugin-kcp-common")))
     testImplementation(libs.kotlinCompilerEmbeddable22)
     testImplementation(libs.kotlinGradlePlugin22)
     testImplementation(libs.kotlinCompilerTesting22)
@@ -46,11 +46,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-datadogBuildConfig {
+ooBuildConfig {
     applyKotlinConfig()
     applyJunitConfig()
     applyJacocoConfig()
     applyJavadocConfig()
     applyDependencyUpdateConfig()
-    applyPublishingConfig("Module to support Datadog Compiler Plugin with kotlin 2.2.x or above")
+    applyPublishingConfig("Module to support OpenObserve Compiler Plugin with kotlin 2.2.x or above")
 }

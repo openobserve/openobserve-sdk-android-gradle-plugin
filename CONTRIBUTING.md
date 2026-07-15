@@ -16,7 +16,7 @@ To set up your environment, make sure you installed [Android Studio](https://dev
 You can build the Gradle Plugin using the following Gradle command:
 
 ```shell script
-./gradlew :dd-sdk-android-gradle-plugin:assemble
+./gradlew :openobserve-sdk-android-gradle-plugin:assemble
 ```
 
 ### Running the tests
@@ -25,14 +25,14 @@ The whole project is covered by a set of static analysis tools, linters and test
 
 ```shell script
 # launches the unit tests
-./gradlew :dd-sdk-android-gradle-plugin:test
+./gradlew :openobserve-sdk-android-gradle-plugin:test
 
 # launches the ktlint check and formatter for all Kotlin files (the ktlint client needs to be installed on your machine)
 ktlint -F "**/*.kt" "**/*.kts" '!**/build/generated/**' '!**/build/kspCaches/**'
 
 
 # launches all the tests described above
-./gradlew :dd-sdk-android-gradle-plugin:check
+./gradlew :openobserve-sdk-android-gradle-plugin:check
 ```
 
 ## Submitting Issues
@@ -40,7 +40,7 @@ ktlint -F "**/*.kt" "**/*.kts" '!**/build/generated/**' '!**/build/kspCaches/**'
 Many great ideas for new features come from the community, and we'd be happy to
 consider yours!
 
-To share your request, you can open an [issue](https://github.com/DataDog/dd-sdk-android-gradle-plugin/issues/new?labels=enhancement&template=feature_request.md) 
+To share your request, you can open an [issue](https://github.com/openobserve/openobserve-sdk-android-gradle-plugin/issues/new?labels=enhancement&template=feature_request.md) 
 with the details about what you'd like to see. At a minimum, please provide:
 
  - The goal of the new feature;
@@ -50,12 +50,12 @@ with the details about what you'd like to see. At a minimum, please provide:
 
 ## Found a bug?
 
-For any urgent matters (such as outages) or issues concerning the Datadog service
+For any urgent matters (such as outages) or issues concerning the OpenObserve service
 or UI, contact our support team via https://docs.datadoghq.com/help/ for direct,
 faster assistance.
 
-You may submit bug reports concerning the Datadog SDK for Android by 
-[opening a GitHub issue](https://github.com/DataDog/dd-sdk-android-gradle-plugin/issues/new?labels=bug&template=bug_report.md).
+You may submit bug reports concerning the OpenObserve SDK for Android by 
+[opening a GitHub issue](https://github.com/openobserve/openobserve-sdk-android-gradle-plugin/issues/new?labels=bug&template=bug_report.md).
 At a minimum, please provide:
 
  - A description of the problem;
@@ -66,7 +66,7 @@ At a minimum, please provide:
  - Any details you can share about your configuration including:
     - Gradle Version;
     - Android API level;
-    - Datadog SDK version;
+    - OpenObserve SDK version;
     - Versions of any other relevant dependencies (OkHttp, …);
     - Your proguard configuration;
     - The list of Gradle plugins applied to your project.
@@ -84,19 +84,19 @@ the bug are best.
 ## Have a patch?
 
 We welcome code contributions to the library, which you can 
-[submit as a pull request](https://github.com/DataDog/dd-sdk-android-gradle-plugin/pull/new/master).
+[submit as a pull request](https://github.com/openobserve/openobserve-sdk-android-gradle-plugin/pull/new/master).
 Before you submit a PR, make sure that you first create an Issue to explain the
 bug or the feature your patch covers, and make sure another Issue or PR doesn't
 already exist.
 
 To create a pull request:
 
-1. **Fork the repository** from https://github.com/DataDog/dd-sdk-android-gradle-plugin ;
+1. **Fork the repository** from https://github.com/openobserve/openobserve-sdk-android-gradle-plugin ;
 2. **Make any changes** for your patch;
 3. **Write tests** that demonstrate how the feature works or how the bug is fixed;
 4. **Update any documentation** (especially for new features);
 5. **Submit the pull request** from your fork back to this 
-    [repository](https://github.com/DataDog/dd-sdk-android-gradle-plugin) .
+    [repository](https://github.com/openobserve/openobserve-sdk-android-gradle-plugin) .
 
 
 The pull request will be run through our CI pipeline, and a project member will
@@ -170,7 +170,7 @@ ktlint -F "**/*.kt" "**/*.kts" '!**/build/generated/**' '!**/build/kspCaches/**'
 
 It is important to be sure that our library work properly in any scenario. All
 non-trivial code must be tested. If you're not used to writing tests, you can
-take a look at the `test` folder to get some ideas on how we write them at Datadog.
+take a look at the `test` folder to get some ideas on how we write them at OpenObserve.
 
 We use a variety of tools to help us write tests easy to read and maintain:
 

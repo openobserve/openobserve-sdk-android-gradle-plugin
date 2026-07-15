@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
-# This product includes software developed at Datadog (https://www.datadoghq.com/).
-# Copyright 2019-Present Datadog, Inc
+# This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+# Copyright 2019-Present OpenObserve, Inc
 
 import re
 import subprocess
@@ -24,7 +24,7 @@ TARGET_GRADLE_PLUGIN = "gradle-plugin"
 REPOSITORIES = {
     TARGET_APP: "datadog-android",
     TARGET_DEMO: "shopist-android",
-    TARGET_GRADLE_PLUGIN: "dd-sdk-android-gradle-plugin",
+    TARGET_GRADLE_PLUGIN: "openobserve-sdk-android-gradle-plugin",
     # Flutter is not needed because it pulls updates instead of being pushed them with the dogfood script.
 }
 
@@ -36,15 +36,15 @@ FILE_PATH = {
 
 PREFIX = {
     TARGET_APP: "datadog-plugin",
-    TARGET_DEMO: "datadogPluginGradle",
-    TARGET_GRADLE_PLUGIN: "datadogPluginGradle",
+    TARGET_DEMO: "ooPluginGradle",
+    TARGET_GRADLE_PLUGIN: "ooPluginGradle",
 }
 
 
 def parse_arguments(args: list) -> Namespace:
     parser = ArgumentParser()
 
-    parser.add_argument("-v", "--version", required=True, help="the version of the Datadog Gradle Plugin")
+    parser.add_argument("-v", "--version", required=True, help="the version of the OpenObserve Gradle Plugin")
     parser.add_argument("-t", "--target", required=True,
                         choices=[TARGET_APP, TARGET_DEMO, TARGET_GRADLE_PLUGIN],
                         help="the target repository")
@@ -61,10 +61,10 @@ def github_create_pr(repository: str, branch_name: str, base_name: str, version:
     }
     body = "This PR has been created automatically by the CI"
     if previous_version:
-        diff = "Updating Datadog Gradle Plugin from version {previous_version} to version {version}: [diff](https://github.com/DataDog/dd-sdk-android-gradle-plugin/compare/{previous_version}...{version})".format(previous_version=previous_version, version=version)
+        diff = "Updating OpenObserve Gradle Plugin from version {previous_version} to version {version}: [diff](https://github.com/openobserve/openobserve-sdk-android-gradle-plugin/compare/{previous_version}...{version})".format(previous_version=previous_version, version=version)
         body = "\\n".join([body, diff])
     data = '{"body": "' + body + '", ' \
-           '"title": "Update Datadog Gradle Plugin to version ' + version + '", ' \
+           '"title": "Update OpenObserve Gradle Plugin to version ' + version + '", ' \
            '"base":"' + base_name + '", "head":"' + branch_name + '"}'
 
     url = "https://api.github.com/repos/DataDog/" + repository + "/pulls"
@@ -109,7 +109,7 @@ def git_clone_repository(repo_name: str, gh_token: str, temp_dir_path: str) -> T
 def git_push_changes(repo: Repo, version: str, repo_name: str, branch_name: str, base_sha: str, gh_token: str):
     print("Committing changes")
     repo.git.add(update=True)
-    repo.index.commit("Update Datadog Gradle Plugin to " + version)
+    repo.index.commit("Update OpenObserve Gradle Plugin to " + version)
 
     print("Pushing branch with commit-headless (signed)")
     target = "DataDog/" + repo_name
@@ -135,7 +135,7 @@ def git_push_changes(repo: Repo, version: str, repo_name: str, branch_name: str,
 
 
 def update_dependant(version: str, target: str, gh_token: str, dry_run: bool) -> int:
-    branch_name = "update_datadog_gradle_plugin_" + version
+    branch_name = "update_openobserve_gradle_plugin_" + version
     temp_dir = TemporaryDirectory()
     temp_dir_path = temp_dir.name
     repo_name = REPOSITORIES[target]

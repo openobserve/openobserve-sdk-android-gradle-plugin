@@ -1,12 +1,12 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
-package com.datadog.gradle.plugin.kcp
+package com.openobserve.gradle.plugin.kcp
 
-import com.datadog.gradle.plugin.InstrumentationMode
+import com.openobserve.gradle.plugin.InstrumentationMode
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import fr.xgouchet.elmyr.annotation.Forgery
@@ -49,7 +49,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             classLoader = result.classLoader,
-            className = "com.datadog.kcp.NoModifierTestCase",
+            className = "com.openobserve.kcp.NoModifierTestCase",
             methodName = "NoModifierTestCase",
             methodArgs = listOf()
         )
@@ -74,7 +74,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             classLoader = result.classLoader,
-            className = "com.datadog.kcp.NoModifierTestCase",
+            className = "com.openobserve.kcp.NoModifierTestCase",
             methodName = "NoModifierTestCase",
             methodArgs = listOf()
         )
@@ -100,7 +100,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.DefaultModifierTestCase",
+            "com.openobserve.kcp.DefaultModifierTestCase",
             "DefaultModifierTestCase",
             listOf()
         )
@@ -125,7 +125,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.DefaultModifierTestCase",
+            "com.openobserve.kcp.DefaultModifierTestCase",
             "DefaultModifierTestCase",
             listOf()
         )
@@ -151,7 +151,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.CustomModifierTestCase",
+            "com.openobserve.kcp.CustomModifierTestCase",
             "CustomModifierTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -177,7 +177,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.CustomModifierTestCase",
+            "com.openobserve.kcp.CustomModifierTestCase",
             "CustomModifierTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -203,7 +203,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.ImageTestCase",
+            "com.openobserve.kcp.ImageTestCase",
             "ImageTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -229,7 +229,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.IconTestCase",
+            "com.openobserve.kcp.IconTestCase",
             "IconTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -255,7 +255,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.CoilTestCase",
+            "com.openobserve.kcp.CoilTestCase",
             "CoilTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -281,7 +281,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NullableModifierTestCase",
+            "com.openobserve.kcp.NullableModifierTestCase",
             "NullableModifierTestCase",
             listOf(mockCustomModifierCallback)
         )
@@ -306,7 +306,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.DependencyDefaultModifierTestCase",
+            "com.openobserve.kcp.DependencyDefaultModifierTestCase",
             "DependencyDefaultModifierTestCase",
             listOf()
         )
@@ -335,14 +335,14 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.SizingDefaultModifierTestCase",
+            "com.openobserve.kcp.SizingDefaultModifierTestCase",
             "SizingDefaultModifierTestCase",
             listOf(mockCustomModifierCallback)
         )
 
         // Then
         // The omitted `iconModifier` argument must keep its `Modifier.stubModifier(...)` default rather than
-        // being overwritten with `Modifier.instrumentedDatadog(...)`. See #575.
+        // being overwritten with `Modifier.instrumentedOpenObserve(...)`. See #575.
         assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
         verify(mockCustomModifierCallback).invoke()
     }
@@ -365,7 +365,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.DefaultModifierWithAnnotationTestCase",
+            "com.openobserve.kcp.DefaultModifierWithAnnotationTestCase",
             "DefaultModifierWithAnnotationTestCase",
             emptyList()
         )
@@ -397,7 +397,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         )
         executeClassFile(
             result.classLoader,
-            "com.datadog.kcp.NestedComposableTestCase",
+            "com.openobserve.kcp.NestedComposableTestCase",
             "NestedComposableTestCase",
             emptyList()
         )
@@ -430,7 +430,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val NO_MODIFIER_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
@@ -455,7 +455,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val DEFAULT_MODIFIER_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
@@ -481,7 +481,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val CUSTOM_MODIFIER_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
@@ -512,7 +512,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val IMAGE_TEST_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.foundation.Image
@@ -538,7 +538,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
         @Language("kotlin")
         private val ICON_TEST_SOURCE_FILE_CONTENT =
             """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.material.Icon
@@ -565,7 +565,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val COIL_TEST_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import coil.compose.AsyncImage
@@ -591,11 +591,11 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val DEFAULT_MODIFIER_WITH_ANNOTATION_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
-            import com.datadog.android.compose.ComposeInstrumentation
+            import com.openobserve.android.compose.ComposeInstrumentation
             
             class DefaultModifierWithAnnotationTestCase{
                 
@@ -620,7 +620,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val NULLABLE_MODIFIER_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
@@ -657,7 +657,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val DEPENDENCY_DEFAULT_MODIFIER_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.compose.foundation.Image
@@ -676,7 +676,7 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val SIZING_DEFAULT_MODIFIER_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
 
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
@@ -714,11 +714,11 @@ abstract class ComposeTagCompilationTest : KotlinCompilerTest() {
     @Language("kotlin")
     private val NESTED_COMPOSABLE_SOURCE_FILE_CONTENT =
         """
-            package com.datadog.kcp
+            package com.openobserve.kcp
     
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
-            import com.datadog.android.compose.ComposeInstrumentation
+            import com.openobserve.android.compose.ComposeInstrumentation
             
             class NestedComposableTestCase{
                 

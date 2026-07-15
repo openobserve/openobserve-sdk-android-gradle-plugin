@@ -64,7 +64,7 @@ create_key:
   when: manual
   tags: [ "arch:amd64" ]
   variables:
-    PROJECT_NAME: "dd-sdk-android-gradle-plugin"
+    PROJECT_NAME: "openobserve-sdk-android-gradle-plugin"
     EXPORT_TO_KEYSERVER: "true"
   image: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/agent-key-management-tools/gpg:1
   script:
@@ -90,7 +90,7 @@ analysis:licenses:
   stage: analysis
   timeout: 30m
   script:
-    - GRADLE_OPTS="-Xmx2560m" ./gradlew :dd-sdk-android-gradle-plugin:checkThirdPartyLicences --stacktrace --no-daemon
+    - GRADLE_OPTS="-Xmx2560m" ./gradlew :openobserve-sdk-android-gradle-plugin:checkThirdPartyLicences --stacktrace --no-daemon
 
 analysis:woke:
   tags: [ "arch:amd64" ]
@@ -112,18 +112,18 @@ test:plugin:
     KUBERNETES_MEMORY_LIMIT: "25Gi"
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin" ./gradlew :dd-sdk-android-gradle-plugin:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin" ./gradlew :openobserve-sdk-android-gradle-plugin:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin/build/test-results/test/TEST-*.xml
 
 test:common:
   tags: [ "arch:amd64" ]
@@ -132,18 +132,18 @@ test:common:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-kcp-common" ./gradlew :dd-sdk-android-gradle-plugin-kcp-common:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-kcp-common" ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-common:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin-kcp-common/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin-kcp-common/build/test-results/test/TEST-*.xml
 
 test:kotlin20:
   tags: [ "arch:amd64" ]
@@ -152,18 +152,18 @@ test:kotlin20:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-kcp-kotlin20" ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin20:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-kcp-kotlin20" ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin20:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin-kcp-kotlin20/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin-kcp-kotlin20/build/test-results/test/TEST-*.xml
 
 test:kotlin21:
   tags: [ "arch:amd64" ]
@@ -172,18 +172,18 @@ test:kotlin21:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-kcp-kotlin21" ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin21:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-kcp-kotlin21" ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin21:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin-kcp-kotlin21/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin-kcp-kotlin21/build/test-results/test/TEST-*.xml
 
 test:kotlin22:
   tags: [ "arch:amd64" ]
@@ -192,18 +192,18 @@ test:kotlin22:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-kcp-kotlin22" ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin22:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-kcp-kotlin22" ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin22:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin-kcp-kotlin22/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin-kcp-kotlin22/build/test-results/test/TEST-*.xml
 
 test:kotlin24:
   tags: [ "arch:amd64" ]
@@ -212,18 +212,18 @@ test:kotlin24:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-kcp-kotlin24" ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin24:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-kcp-kotlin24" ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin24:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
   artifacts:
     reports:
-      junit: dd-sdk-android-gradle-plugin-kcp-kotlin24/build/test-results/test/TEST-*.xml
+      junit: openobserve-sdk-android-gradle-plugin-kcp-kotlin24/build/test-results/test/TEST-*.xml
 
 test:build-config:
   tags: [ "arch:amd64" ]
@@ -232,12 +232,12 @@ test:build-config:
   timeout: 1h
   script:
     - rm -rf ~/.gradle/daemon/
-    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
-    - export DD_AGENT_HOST="$BUILDENV_HOST_IP"
-    - GRADLE_OPTS="-Xmx2560m" DD_TAGS="test.module:dd-sdk-android-gradle-plugin-build-config" ./gradlew :build-config:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$DD_COMMON_AGENT_CONFIG
+    - CODECOV_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.codecov-token --with-decryption --query "Parameter.Value" --out text)
+    - export OO_AGENT_HOST="$BUILDENV_HOST_IP"
+    - GRADLE_OPTS="-Xmx2560m" OO_TAGS="test.module:openobserve-sdk-android-gradle-plugin-build-config" ./gradlew :build-config:test --stacktrace --no-daemon -Dorg.gradle.jvmargs=-javaagent:$(pwd)/libs/dd-java-agent-1.54.0.jar=$OO_COMMON_AGENT_CONFIG
     - bash <(cat ./ci/scripts/codecov.sh) -t $CODECOV_TOKEN
     - |
-      if [ -n "$DD_API_KEY" ]; then
+      if [ -n "$OO_API_KEY" ]; then
         curl -L --fail "https://github.com/DataDog/datadog-ci/releases/latest/download/datadog-ci_linux-x64" --output "/usr/local/bin/datadog-ci" && chmod +x /usr/local/bin/datadog-ci
         datadog-ci coverage upload --format=jacoco . || true
       fi
@@ -267,17 +267,17 @@ publish:publish-sonatype:
   stage: publish
   timeout: 30m
   script:
-    - echo "$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.gradle-properties --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
-    - export GPG_PRIVATE_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.signing.gpg_private_key --with-decryption --query "Parameter.Value" --out text)
-    - export GPG_PASSWORD=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.signing.gpg_passphrase --with-decryption --query "Parameter.Value" --out text)
-    - echo "mavenCentralUsername=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.publishing.central_username --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
-    - echo "mavenCentralPassword=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.publishing.central_password --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
-    - ./gradlew :dd-sdk-android-gradle-plugin:publishPluginMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
-    - ./gradlew :dd-sdk-android-gradle-plugin-kcp-common:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
-    - ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin20:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
-    - ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin21:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
-    - ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin22:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
-    - ./gradlew :dd-sdk-android-gradle-plugin-kcp-kotlin24:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - echo "$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.gradle-properties --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
+    - export GPG_PRIVATE_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.signing.gpg_private_key --with-decryption --query "Parameter.Value" --out text)
+    - export GPG_PASSWORD=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.signing.gpg_passphrase --with-decryption --query "Parameter.Value" --out text)
+    - echo "mavenCentralUsername=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.publishing.central_username --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
+    - echo "mavenCentralPassword=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.publishing.central_password --with-decryption --query "Parameter.Value" --out text)" >> ./gradle.properties
+    - ./gradlew :openobserve-sdk-android-gradle-plugin:publishPluginMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-common:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin20:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin21:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin22:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
+    - ./gradlew :openobserve-sdk-android-gradle-plugin-kcp-kotlin24:publishMavenPublicationToMavenCentralRepository --stacktrace --no-daemon
 
 publish:publish-gradle-portal:
   tags: [ "arch:amd64" ]
@@ -287,10 +287,10 @@ publish:publish-gradle-portal:
   stage: publish
   timeout: 30m
   script:
-    - aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.gradle-properties --with-decryption --query "Parameter.Value" --out text >> ./gradle.properties
-    - export GPG_PRIVATE_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.signing.gpg_private_key --with-decryption --query "Parameter.Value" --out text)
-    - export GPG_PASSWORD=$(aws ssm get-parameter --region us-east-1 --name ci.dd-sdk-android-gradle-plugin.signing.gpg_passphrase --with-decryption --query "Parameter.Value" --out text)
-    - ./gradlew :dd-sdk-android-gradle-plugin:publishPlugins --stacktrace --no-daemon
+    - aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.gradle-properties --with-decryption --query "Parameter.Value" --out text >> ./gradle.properties
+    - export GPG_PRIVATE_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.signing.gpg_private_key --with-decryption --query "Parameter.Value" --out text)
+    - export GPG_PASSWORD=$(aws ssm get-parameter --region us-east-1 --name ci.openobserve-sdk-android-gradle-plugin.signing.gpg_passphrase --with-decryption --query "Parameter.Value" --out text)
+    - ./gradlew :openobserve-sdk-android-gradle-plugin:publishPlugins --stacktrace --no-daemon
 
 notify:publish-develop-success:
   extends: .slack-notifier-base
@@ -320,7 +320,7 @@ notify:release:
   only:
     - tags
   script:
-    - MAVEN_URL="https://search.maven.org/artifact/com.datadoghq/dd-sdk-android-gradle-plugin/$CI_COMMIT_TAG/aar"
+    - MAVEN_URL="https://search.maven.org/artifact/io.openobserve/openobserve-sdk-android-gradle-plugin/$CI_COMMIT_TAG/aar"
     - 'MESSAGE_TEXT=":package: $CI_PROJECT_NAME $CI_COMMIT_TAG published on :maven: $MAVEN_URL"'
     - postmessage "#mobile-sdk-ops" "$MESSAGE_TEXT"
 
@@ -378,6 +378,6 @@ notify:dogfood-gradle-plugin:
   stage: notify
   when: on_success
   script:
-    - export GITHUB_TOKEN=$(dd-octo-sts token --scope DataDog/dd-sdk-android-gradle-plugin --policy all.gitlab.pr)
+    - export GITHUB_TOKEN=$(dd-octo-sts token --scope openobserve/openobserve-sdk-android-gradle-plugin --policy all.gitlab.pr)
     - pip3 install GitPython requests
     - python3 ./ci/scripts/dogfood.py -v $CI_COMMIT_TAG -t gradle-plugin

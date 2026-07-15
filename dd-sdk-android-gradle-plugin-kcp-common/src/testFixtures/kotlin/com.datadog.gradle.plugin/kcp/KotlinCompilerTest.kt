@@ -1,12 +1,12 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
-package com.datadog.gradle.plugin.kcp
+package com.openobserve.gradle.plugin.kcp
 
-import com.datadog.gradle.plugin.InstrumentationMode
+import com.openobserve.gradle.plugin.InstrumentationMode
 import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
@@ -28,7 +28,7 @@ abstract class KotlinCompilerTest {
     @Mock
     protected lateinit var mockCallback: (Boolean) -> Unit
 
-    abstract fun registerDatadogPluginRegistrar(
+    abstract fun registerOpenObservePluginRegistrar(
         compilation: KotlinCompilation,
         instrumentationMode: InstrumentationMode
     )
@@ -45,7 +45,7 @@ abstract class KotlinCompilerTest {
         return KotlinCompilation().apply {
             sources = deps + target
             if (enablePlugin) {
-                registerDatadogPluginRegistrar(this, instrumentationMode)
+                registerOpenObservePluginRegistrar(this, instrumentationMode)
             }
             inheritClassPath = true
             messageOutputStream = System.out

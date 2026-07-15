@@ -1,7 +1,7 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
 plugins {
@@ -26,7 +26,7 @@ plugins {
     id("thirdPartyLicences")
     id("transitiveDependencies")
     id("compilerMetadata")
-    id("datadogBuildConfig")
+    id("ooBuildConfig")
 }
 
 dependencies {
@@ -53,11 +53,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-datadogBuildConfig {
+ooBuildConfig {
     applyJavadocConfig()
     applyKotlinConfig()
     applyJunitConfig()
     applyJacocoConfig()
     applyDependencyUpdateConfig()
-    applyPublishingConfig("Common module for Datadog Kotlin Compiler Plugin")
+    applyPublishingConfig("Common module for OpenObserve Kotlin Compiler Plugin")
 }

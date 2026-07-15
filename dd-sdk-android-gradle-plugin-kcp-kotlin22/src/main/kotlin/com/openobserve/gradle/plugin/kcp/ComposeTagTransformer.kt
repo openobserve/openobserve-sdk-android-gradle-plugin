@@ -1,0 +1,262 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin.kcp
+
+import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
+import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.builders.irBoolean
+import org.jetbrains.kotlin.ir.builders.irCall
+import org.jetbrains.kotlin.ir.builders.irGetObjectValue
+import org.jetbrains.kotlin.ir.builders.irString
+import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.IrPackageFragment
+import org.jetbrains.kotlin.ir.declarations.IrParameterKind
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrComposite
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
+import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
+import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.createType
+import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.name.SpecialNames
+
+/**
+ * The extension registers [ComposeTagTransformer] into the plugin.
+ *
+ * Internal use only
+ */
+@OptIn(DeprecatedForRemovalCompilerApi::class, UnsafeDuringIrConstructionAPI::class)
+class ComposeTagTransformer(
+    private val messageCollector: MessageCollector,
+    private val pluginContext: IrPluginContext,
+    private val annotationModeEnabled: Boolean,
+    private val pluginContextUtils: PluginContextUtils = DefaultPluginContextUtils(
+        pluginContext,
+        messageCollector
+    )
+) : IrElementTransformerVoidWithContext() {
+
+    private val visitedFunctions = ArrayDeque<String?>()
+    private val visitedBuilders = ArrayDeque<DeclarationIrBuilder?>()
+    private lateinit var ooTagFunctionSymbol: IrSimpleFunctionSymbol
+    private lateinit var modifierClass: IrClassSymbol
+    private lateinit var modifierThenSymbol: IrSimpleFunctionSymbol
+    private lateinit var modifierCompanionClassSymbol: IrClassSymbol
+
+    /**
+     * Initializes references to required symbols for the transformer.
+     */
+    @OptIn(UnsafeDuringIrConstructionAPI::class)
+    @Suppress("ReturnCount")
+    fun initReferences(): Boolean {
+        ooTagFunctionSymbol = pluginContextUtils.getOpenObserveModifierSymbol() ?: run {
+            messageCollector.strongWarning(ERROR_MISSING_OPENOBSERVE_COMPOSE_INTEGRATION)
+            return false
+        }
+        modifierClass = pluginContextUtils.getModifierClassSymbol() ?: run {
+            messageCollector.strongWarning(ERROR_MISSING_COMPOSE_UI)
+            return false
+        }
+        modifierThenSymbol = pluginContextUtils.getModifierThen() ?: run {
+            messageCollector.strongWarning(ERROR_MISSING_COMPOSE_UI)
+            return false
+        }
+        modifierCompanionClassSymbol = pluginContextUtils.getModifierCompanionClass() ?: run {
+            messageCollector.strongWarning(ERROR_MISSING_COMPOSE_UI)
+            return false
+        }
+        return true
+    }
+
+    override fun visitFunctionNew(declaration: IrFunction): IrStatement {
+        val declarationName = declaration.name
+        val functionName = if (!isAnonymousFunction(declarationName)) {
+            declarationName.toString()
+        } else {
+            visitedFunctions.lastOrNull() ?: declarationName.toString()
+        }
+
+        if (pluginContextUtils.isComposeInstrumentationTargetFunc(declaration, annotationModeEnabled)) {
+            visitedFunctions.add(functionName)
+            visitedBuilders.add(DeclarationIrBuilder(pluginContext, declaration.symbol))
+            val irStatement = super.visitFunctionNew(declaration)
+            visitedFunctions.removeLast()
+            visitedBuilders.removeLast()
+            return irStatement
+        } else {
+            return declaration
+        }
+    }
+
+    override fun visitFunctionExpression(expression: IrFunctionExpression): IrExpression {
+        // We should visit Jetpack Compose content lambda body as function for instrumentation.
+        expression.function.body?.accept(this, null)
+        return super.visitFunctionExpression(expression)
+    }
+
+    @Suppress("ReturnCount")
+    override fun visitCall(expression: IrCall): IrExpression {
+        val builder = visitedBuilders.lastOrNull() ?: return super.visitCall(
+            expression
+        )
+        val dispatchReceiver = expression.dispatchReceiver
+        // Chained function call should be skipped
+        if (dispatchReceiver is IrCall) {
+            return super.visitCall(expression)
+        }
+        expression.symbol.owner.parameters
+            .filter { it.kind == IrParameterKind.Regular || it.kind == IrParameterKind.Context }
+            .forEachIndexed { index, irValueParameter ->
+                // Locate where Modifier is accepted in the parameter list and replace it with the new expression.
+                if (irValueParameter.type.classFqName == modifierClassFqName) {
+                    val argument = expression.getValueArgument(index)
+                    // Skip instrumenting an omitted argument whose callee default carries behavior
+                    // (e.g. `Modifier.size(...)` or `null` consumed via an elvis). Overwriting it would
+                    // discard that default and corrupt the layout. See #575.
+                    if (shouldPreserveCalleeDefault(irValueParameter, argument)) {
+                        return@forEachIndexed
+                    }
+                    val irExpression = buildIrExpression(
+                        expression = argument,
+                        builder = builder,
+                        functionName = expression.symbol.owner.name.asString(),
+                        isImageComposableFunction = isImageComposableFunction(expression)
+                    )
+                    expression.putValueArgument(index, irExpression)
+                }
+            }
+        return super.visitCall(expression)
+    }
+
+    @Suppress("ReturnCount")
+    private fun isImageComposableFunction(irExpression: IrExpression): Boolean {
+        if (irExpression !is IrCall) {
+            return false
+        }
+        val function = irExpression.symbol.owner
+
+        // Look up the parents until the package level.
+        var parent = function.parent
+        while (parent !is IrPackageFragment && parent is IrDeclaration) {
+            parent = parent.parent
+        }
+        if (parent !is IrPackageFragment) {
+            return false
+        }
+        pluginContextUtils.apply {
+            return isFoundationImage(function, parent) ||
+                isMaterialIcon(function, parent) ||
+                isCoilAsyncImage(function, parent)
+        }
+    }
+
+    private fun buildIrExpression(
+        expression: IrExpression?,
+        builder: DeclarationIrBuilder,
+        functionName: String,
+        isImageComposableFunction: Boolean
+    ): IrExpression {
+        val ooTagModifier = buildOpenObserveTagModifierCall(
+            builder = builder,
+            functionName = functionName,
+            isImageComposableFunction = isImageComposableFunction
+        )
+        // A Column(){} will be transformed into following code during FIR:
+        // Column(modifier = // COMPOSITE {
+        //    null
+        // }, verticalArrangement = // COMPOSITE {
+        //    null
+        // }, horizontalAlignment = // COMPOSITE {
+        //    null
+        // }, content = @Composable
+        // checking if the argument is the type of `COMPOSITE`
+        // allows us to know if the modifier is absent in source code.
+        val overwriteModifier = expression == null ||
+            (expression is IrComposite && expression.type.classFqName == kotlinNothingFqName)
+        if (overwriteModifier) {
+            return ooTagModifier
+        } else {
+            // Modifier.then()
+            val thenCall = builder.irCall(
+                modifierThenSymbol,
+                modifierClass.owner.defaultType
+            )
+            thenCall.putValueArgument(0, expression)
+            thenCall.dispatchReceiver = ooTagModifier
+            return thenCall
+        }
+    }
+
+    private fun buildOpenObserveTagModifierCall(
+        builder: DeclarationIrBuilder,
+        functionName: String,
+        isImageComposableFunction: Boolean = false
+    ): IrCall {
+        val ooTagIrCall = builder.irCall(
+            ooTagFunctionSymbol,
+            modifierClass.owner.defaultType
+        ).also {
+            // Modifier
+            // ExtensionReceiver argument
+            it.arguments[
+                it.symbol.owner.parameters.indexOfFirst { argument ->
+                    argument.kind == IrParameterKind.ExtensionReceiver
+                }
+            ] = builder.irGetObjectValue(
+                type = modifierCompanionClassSymbol.createType(false, emptyList()),
+                classSymbol = modifierCompanionClassSymbol
+            )
+            it.putValueArgument(0, builder.irString(functionName))
+
+            // For the images, Role.Image must be assigned to Semantics.Role to ensure that
+            // Session Replay is able to resolve the role.
+            it.putValueArgument(1, builder.irBoolean(isImageComposableFunction))
+        }
+        return ooTagIrCall
+    }
+
+    private fun shouldPreserveCalleeDefault(
+        irValueParameter: IrValueParameter,
+        argument: IrExpression?
+    ): Boolean {
+        val isArgumentAbsent = argument == null ||
+            (argument is IrComposite && argument.type.classFqName == kotlinNothingFqName)
+        if (!isArgumentAbsent) {
+            return false
+        }
+        // Only preserve the callee default when we can positively identify it as a value that carries
+        // behavior. A bare `Modifier` companion (`= Modifier`) is an IrGetObjectValue and is safe to
+        // overwrite; defaults deserialized from dependencies arrive as IrErrorExpression placeholders and
+        // must also be instrumented. Both fall through to `false` here. See #575.
+        return when (irValueParameter.defaultValue?.expression) {
+            // e.g. `Modifier? = null`, consumed via an `iconModifier ?: <fallback>` elvis in the body.
+            is IrConst -> true
+            // e.g. `Modifier.size(40.dp)`.
+            is IrCall -> true
+            else -> false
+        }
+    }
+
+    private fun isAnonymousFunction(name: Name): Boolean = name == SpecialNames.ANONYMOUS
+
+    private companion object {
+        private val modifierClassFqName = FqName("androidx.compose.ui.Modifier")
+        private val kotlinNothingFqName = FqName("kotlin.Nothing")
+    }
+}

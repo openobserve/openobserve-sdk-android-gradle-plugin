@@ -1,7 +1,7 @@
 /*
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
- * This product includes software developed at Datadog (https://www.datadoghq.com/).
- * Copyright 2020-Present Datadog, Inc.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
  */
 
 pluginManagement {
@@ -23,13 +23,13 @@ pluginManagement {
     includeBuild("./tools/build-config")
 }
 
-include(":dd-sdk-android-gradle-plugin")
+include(":openobserve-sdk-android-gradle-plugin")
 
-include(":dd-sdk-android-gradle-plugin-kcp-common")
-include(":dd-sdk-android-gradle-plugin-kcp-kotlin20")
-include(":dd-sdk-android-gradle-plugin-kcp-kotlin21")
-include(":dd-sdk-android-gradle-plugin-kcp-kotlin22")
-include(":dd-sdk-android-gradle-plugin-kcp-kotlin24")
+include(":openobserve-sdk-android-gradle-plugin-kcp-common")
+include(":openobserve-sdk-android-gradle-plugin-kcp-kotlin20")
+include(":openobserve-sdk-android-gradle-plugin-kcp-kotlin21")
+include(":openobserve-sdk-android-gradle-plugin-kcp-kotlin22")
+include(":openobserve-sdk-android-gradle-plugin-kcp-kotlin24")
 
 include(":samples:basic")
 include(":samples:ndk")

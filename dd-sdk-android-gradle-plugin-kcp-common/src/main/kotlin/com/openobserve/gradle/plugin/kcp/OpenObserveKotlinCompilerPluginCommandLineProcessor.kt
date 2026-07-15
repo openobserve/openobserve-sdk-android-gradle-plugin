@@ -1,0 +1,44 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin.kcp
+
+import com.google.auto.service.AutoService
+import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
+import org.jetbrains.kotlin.compiler.plugin.CliOption
+import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.jetbrains.kotlin.config.CompilerConfiguration
+
+@OptIn(ExperimentalCompilerApi::class)
+@AutoService(CommandLineProcessor::class)
+internal class OpenObserveKotlinCompilerPluginCommandLineProcessor : CommandLineProcessor {
+    override val pluginId: String = KOTLIN_COMPILER_PLUGIN_ID
+    override val pluginOptions: Collection<CliOption> = listOf(
+        CliOption(
+            optionName = INSTRUMENTATION_MODE,
+            valueDescription = STRING_VALUE_DESCRIPTION,
+            description = INSTRUMENTATION_MODE_DESCRIPTION,
+            required = false
+        )
+    )
+
+    override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) {
+        if (option.optionName == INSTRUMENTATION_MODE) {
+            configuration.put(
+                OpenObservePluginRegistrar.CONFIG_INSTRUMENTATION_MODE,
+                value
+            )
+        }
+    }
+
+    companion object {
+        private const val STRING_VALUE_DESCRIPTION = "<string>"
+        internal const val KOTLIN_COMPILER_PLUGIN_ID = "io.openobserve.kotlin.compiler"
+        internal const val INSTRUMENTATION_MODE = "INSTRUMENTATION_MODE"
+        private const val INSTRUMENTATION_MODE_DESCRIPTION = "OpenObserve compiler plugin instrumentation mode option."
+    }
+}

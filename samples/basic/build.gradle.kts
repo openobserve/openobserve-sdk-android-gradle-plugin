@@ -1,4 +1,4 @@
-import com.datadog.gradle.config.AndroidConfig
+import com.openobserve.gradle.config.AndroidConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -7,7 +7,7 @@ plugins {
     // you don't need this in your project, it is just to be able to reference AndroidConfig class
     id("noopBuildConfigClasspath") apply false
 
-    // id("com.datadoghq.dd-sdk-android-gradle-plugin")
+    // id("io.openobserve.openobserve-sdk-android-gradle-plugin")
 }
 
 android {
@@ -15,7 +15,7 @@ android {
     buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
-        applicationId = "com.datadog.example.basic"
+        applicationId = "com.openobserve.example.basic"
         minSdk = AndroidConfig.MIN_SDK
         targetSdk = AndroidConfig.TARGET_SDK
         versionCode = 1
@@ -32,7 +32,7 @@ android {
         }
     }
 
-    namespace = "com.datadog.example.basic"
+    namespace = "com.openobserve.example.basic"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
 
-    // implementation(libs.datadogSdkRum)
+    // implementation(libs.ooSdkRum)
 }
 
 // datadog {

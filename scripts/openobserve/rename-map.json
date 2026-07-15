@@ -1,0 +1,103 @@
+{
+  "comment": "Ordered rebrand rules for the openobserve-sdk-android-gradle-plugin fork (fork of DataDog/dd-sdk-android-gradle-plugin, base UPSTREAM_BASE). This is the ProGuard/NDK symbol-upload Gradle plugin (doc 06 #7). PHASE A = IDENTITY rebrand only: package namespace, plugin id, Datadog/DATADOG/DD_ identifiers, filenames. The FUNCTIONAL upload endpoint (DatadogSite host values, datadoghq.com intake URLs, auth) is intentionally NOT rewritten here — repointing to OpenObserve's /api/{org}/sourcemaps intake is an API-adapter patch (Phase B, patches/), not a string swap (see intentionallyNotRebranded). Reuses the Android fork's rebrand.mjs (pathRenames -> fileRenames -> content rules). Run to a fixpoint with --check.",
+  "pathRenames": [
+    {
+      "from": "com/datadoghq",
+      "to": "io/openobserve",
+      "why": "slash-form Maven group in any resource/metadata path; MUST precede com/datadog (hq boundary means it won't be matched by com/datadog, but explicit-first keeps intent)."
+    },
+    {
+      "from": "com/datadog",
+      "to": "com/openobserve",
+      "why": "Kotlin/Java package namespace dir move for all com.datadog.* (gradle.plugin, gradle.plugin.kcp, kcp, android.compose/instrumented, example)."
+    }
+  ],
+  "fileRenames": [
+    {
+      "token": "Datadog",
+      "to": "OpenObserve",
+      "why": "class-name files whose basename carries Datadog after the content rules rename the class inside (DatadogPluginRegistrar.kt, DatadogCiFileConfig.kt, DatadogSite.kt, ...)."
+    }
+  ],
+  "rules": [
+    {
+      "literal": "DataDog/dd-sdk-android-gradle-plugin",
+      "to": "openobserve/openobserve-sdk-android-gradle-plugin",
+      "why": "repo URLs (before the generic dd-sdk-android-gradle-plugin rule)"
+    },
+    {
+      "literal": "com.datadoghq.dd-sdk-android-gradle-plugin",
+      "to": "io.openobserve.openobserve-sdk-android-gradle-plugin",
+      "why": "the PUBLISHED plugin id consumers apply (id(\"...\")) + gradlePlugin block. Our own plugin, so renamed. MUST precede com.datadoghq."
+    },
+    {
+      "literal": "com.datadoghq",
+      "to": "io.openobserve",
+      "why": "Maven group id in publishing config"
+    },
+    {
+      "literal": "dd-sdk-android-gradle-plugin",
+      "to": "openobserve-sdk-android-gradle-plugin",
+      "why": "artifact id / module refs (after the repo-URL + plugin-id rules)"
+    },
+    {
+      "literal": "com/datadoghq",
+      "to": "io/openobserve",
+      "why": "slash-form Maven group in content (before broad com/datadog)"
+    },
+    {
+      "literal": "com/datadog",
+      "to": "com/openobserve",
+      "why": "slash-form package path in content (.api dumps, test strings, resource descriptors)"
+    },
+    {
+      "literal": "com.datadog",
+      "to": "com.openobserve",
+      "why": "package + import declarations across all com.datadog.* (after com.datadoghq so the group is consumed first, never corrupted to com.openobservehq)"
+    },
+    {
+      "regex": "Datadog([A-Z][A-Za-z0-9]*)",
+      "to": "OpenObserve$1",
+      "why": "type/object names + mid-word compounds: DatadogSite, DatadogPluginRegistrar, DatadogCiFileConfig, DatadogModifierSymbol, getDatadogConfig. No leading \\b so mid-identifier occurrences are caught."
+    },
+    {
+      "literal": "Datadog",
+      "to": "OpenObserve",
+      "why": "catch-all for any remaining mixed-case Datadog substring. After the compound rule. Safe: no kept token contains 'Datadog' (attribution is in NOTICE/LICENSE, excluded)."
+    },
+    {
+      "literal": "DATADOG",
+      "to": "OPENOBSERVE",
+      "why": "SCREAMING_CASE constant names incl. mid-word (after '_'). Does not touch lowercase datadoghq.com wire/host values."
+    },
+    {
+      "regex": "\\bDD_",
+      "to": "OO_",
+      "why": "env-var NAME prefixes the plugin defines/reads (DD_API_KEY, DD_SITE, DD_TAGS, DD_AGENT_HOST). \\b guards against mid-token (ADD_, ODD_). The VALUES/auth behavior are Phase B."
+    },
+    {
+      "regex": "\\bdatadog([A-Z][A-Za-z0-9]*)",
+      "to": "oo$1",
+      "why": "lowercase camelCase identifiers (datadogConfig, datadogSite). Word-boundary guarded so it never matches x-datadog-* or datadoghq host strings (followed by '-'/'h', not [A-Z])."
+    },
+    {
+      "literal": "datadog_",
+      "to": "openobserve_",
+      "why": "snake_case identifiers/resources"
+    },
+    {
+      "regex": "\\b_dd\\b",
+      "to": "_oo",
+      "why": "internal telemetry namespace field (matches the schema fork)"
+    }
+  ],
+  "intentionallyNotRebranded": {
+    "comment": "PHASE B — functional intake adapter (patches/), NOT a string rename. Repointing the upload from Datadog's intake to OpenObserve's /api/{org}/sourcemaps changes URL construction, the multipart shape, and auth — real code, tested separately.",
+    "items": [
+      "datadoghq.com / DatadogSite host VALUES (us1/eu1/... -> datadoghq.com): the upload host. Phase B replaces the site->host mapping with an OpenObserve endpoint config.",
+      "the Datadog sourcemap-intake API shape (event metadata + multipart): Phase B adapts it to OpenObserve's /sourcemaps multipart (service/env/version + file fields, doc 06 §2).",
+      "auth: Datadog uses DD_API_KEY against the intake; Phase B wires the OpenObserve org token (same header as ingest, doc 02 §1).",
+      "keep-ours identity files (README, LICENSE/NOTICE, .github) + CHANGELOG reset."
+    ]
+  }
+}

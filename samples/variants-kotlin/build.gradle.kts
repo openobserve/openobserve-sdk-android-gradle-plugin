@@ -1,6 +1,6 @@
 @file:Suppress("StringLiteralDuplication")
 
-import com.datadog.gradle.config.AndroidConfig
+import com.openobserve.gradle.config.AndroidConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,16 +9,16 @@ plugins {
     // you don't need this in your project, it is just to be able to reference AndroidConfig class
     id("noopBuildConfigClasspath") apply false
 
-//    id("com.datadoghq.dd-sdk-android-gradle-plugin")
+//    id("io.openobserve.openobserve-sdk-android-gradle-plugin")
 }
 
 android {
     compileSdk = AndroidConfig.TARGET_SDK
     buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
-    namespace = "com.datadog.example.variants"
+    namespace = "com.openobserve.example.variants"
     defaultConfig {
-        applicationId = "com.datadog.example.variants.kotlin"
+        applicationId = "com.openobserve.example.variants.kotlin"
 
         minSdk = AndroidConfig.MIN_SDK
         targetSdk = AndroidConfig.TARGET_SDK
@@ -93,7 +93,7 @@ dependencies {
 /*
 datadog {
     site = "US"
-    checkProjectDependencies = com.datadog.gradle.plugin.SdkCheckLevel.FAIL
+    checkProjectDependencies = com.openobserve.gradle.plugin.SdkCheckLevel.FAIL
     mappingFilePath = "path/to/mapping.txt"
 
     variants {

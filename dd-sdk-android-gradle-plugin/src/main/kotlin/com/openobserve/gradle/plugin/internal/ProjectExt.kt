@@ -1,0 +1,31 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at OpenObserve (https://www.datadoghq.com/).
+ * Copyright 2020-Present OpenObserve, Inc.
+ */
+
+package com.openobserve.gradle.plugin.internal
+
+import com.openobserve.gradle.plugin.DdAndroidGradlePlugin.Companion.LOGGER
+import org.gradle.process.ExecOperations
+import org.gradle.process.internal.ExecException
+import java.io.ByteArrayOutputStream
+
+internal fun ExecOperations.execShell(vararg command: String): String {
+    val outputStream = ByteArrayOutputStream()
+    val errorStream = ByteArrayOutputStream()
+    try {
+        this.exec {
+            @Suppress("SpreadOperator")
+            it.commandLine(*command)
+            it.standardOutput = outputStream
+            it.errorOutput = errorStream
+        }
+    } catch (@Suppress("DEPRECATION") e: ExecException) {
+        // Suppress deprecation above because replacement class is only available starting from Gradle 9.0
+        LOGGER.error(errorStream.toString("UTF-8"))
+        throw e
+    }
+
+    return outputStream.toString("UTF-8")
+}
