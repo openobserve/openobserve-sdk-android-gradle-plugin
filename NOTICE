@@ -1,3 +1,15 @@
+OpenObserve SDK for Android — Gradle Plugin
+Copyright 2026-Present OpenObserve, Inc.
+
+This software is a derivative work based on the Datadog SDK for Android Gradle
+Plugin, used under the Apache License, Version 2.0 (see LICENSE). Modifications
+have been made to the original software by OpenObserve, Inc.
+
+The original software's attribution notice is retained below, as required by
+section 4 of the Apache License, Version 2.0.
+
+-------------------------------------------------------------------------------
+
 Datadog dd-sdk-android
 Copyright 2019 Datadog, Inc.
 

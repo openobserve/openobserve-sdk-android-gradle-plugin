@@ -112,10 +112,23 @@ function movesForRule(rule, dirs) {
 
 // ---- Phase 2: content rules -------------------------------------------------
 const compiled = rules.map((r) => ({ ...r, matcher: r.regex ? new RegExp(r.regex, 'g') : null }))
+// Apache-2.0 §4(b)/(c): never rewrite upstream attribution lines — the per-file
+// license header (in ANY comment style: /* */, #, <!-- ~ -->) and the third-party
+// copyright manifest (LICENSE-3rdparty.csv). Matched by CONTENT, per line, so the
+// Datadog->OpenObserve rules only touch code. Datadog's copyright/attribution stays
+// verbatim; the OpenObserve modification statement lives in NOTICE + README (kept
+// via keep-ours.txt).
+const ATTRIBUTION_RE = /software developed at Datadog \(https:\/\/www\.datadoghq\.com\/\)|Copyright\b[^\n]*\bDatadog, Inc\./
 function applyRules(s) {
-  let out = s
-  for (const r of compiled) out = r.matcher ? out.replace(r.matcher, r.to) : out.split(r.literal).join(r.to)
-  return out
+  return s
+    .split('\n')
+    .map((line) => {
+      if (ATTRIBUTION_RE.test(line)) return line
+      let out = line
+      for (const r of compiled) out = r.matcher ? out.replace(r.matcher, r.to) : out.split(r.literal).join(r.to)
+      return out
+    })
+    .join('\n')
 }
 
 // ---- Run --------------------------------------------------------------------

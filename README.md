@@ -1,3 +1,6 @@
+> **OpenObserve fork.** This project is a fork of the corresponding Datadog SDK,
+> distributed under the Apache License 2.0 and modified by OpenObserve, Inc.
+> See [`NOTICE`](./NOTICE) for attribution and [`LICENSE`](./LICENSE) for terms.
 # Gradle Plugin for Datadog Android SDK
 
 > This plugin is used to upload your Proguard/Dexguard/R8 mapping files and NDK symbol files to Datadog to get a complete RUM Error Tracking experience.
